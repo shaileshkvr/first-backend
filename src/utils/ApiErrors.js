@@ -7,6 +7,7 @@ class ApiErrors extends Error {
   ) {
     super(message);
     this.statusCode = statusCode;
+    this.data = null;
     this.message = message;
     this.success = false; // Indicates that the operation was not successful
     this.errors = errors; // Array of error details
