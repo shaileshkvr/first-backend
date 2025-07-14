@@ -13,4 +13,11 @@ app.use(express.urlencoded({ extended: true, limit: "20kb" }));
 // enable CORS with specific origin and credentials
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
 
+app.get("/", (req, res) =>
+  res.send({
+    user: "Shailesh Verma",
+    status: "Connected to database",
+  })
+);
+
 export default app;
