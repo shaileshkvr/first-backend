@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import ApiErrors from "../utils/ApiErrors.js";
+import ApiErrors from "../utils/ApiError.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
       minlength: [8, "Password must be at least 8 characters long"],
+      select: false,
     },
     avatar: {
       type: String, // cloudinary URL or local path
@@ -48,6 +49,7 @@ const userSchema = new mongoose.Schema(
     ],
     refreshToken: {
       type: String,
+      select: false,
     },
   },
   { timestamps: true }
@@ -60,10 +62,11 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.isPasswordValid = async function (password) {
-  const isValid = await bcrypt.compare(password, this.password);
-  if (!isValid) {
-    throw new ApiErrors(401, "Invalid password");
-  }
+  // const isValid = await bcrypt.compare(password, this.password);
+  // if (!isValid) {
+  //   throw new ApiErrors(401, "Invalid password");
+  // }
+  return await bcrypt.compare(password, this.password);
 };
 
 userSchema.methods.generateAccessToken = function () {
@@ -80,7 +83,7 @@ userSchema.methods.generateAccessToken = function () {
     }
   );
 };
-userSchema.methods.generateRefreshToken = async function () {
+userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
       _id: this._id,
