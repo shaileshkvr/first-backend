@@ -7,7 +7,7 @@ import ApiResponse from "../utils/ApiResponse.js";
 const registerUser = asyncHandler(async (req, res) => {
   const { fullName, username, email, password } = req.body;
   // Check for empty field
-  if ([fullName, username, email, password].some((e) => e?.trim() === "")) {
+  if ([fullName, username, email, password].some((e) => e.trim() === "")) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -21,7 +21,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // check if multer uploaded files
   const avatarLocalPath = req.files?.avatar[0].path;
-  const coverImageLocalPath = req.files?.coverImage[0].path;
+  const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar image is required");
@@ -41,21 +41,21 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password,
     avatar: avatar.secure_url,
-    coverImage: coverImage?.secure_url || "",
+    coverImage: coverImage?.secure_url || null,
   });
 
-  // Not optimized, increases database cost
-  const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
-
-  if (!createdUser) {
+  if (!user) {
     throw new ApiError(500, "Something went wrong while registering the user");
   }
 
-  return res.status(201).json(
-    new ApiResponse(201, createdUser, "User registered successfully")
-  );
+  const userObject = user.toObject();
+  // remove sensitive data
+  delete userObject.password;
+  delete userObject.refreshToken;
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, userObject, "User registered successfully"));
 });
 
 export { registerUser };

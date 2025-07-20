@@ -12,7 +12,6 @@ const PORT = process.env.PORT || 5000;
     await connectDB();
     const server = app.listen(PORT, () => {
       console.log(`Server is running on port ${process.env.PORT}`);
-      console.log("MongoDB is disconnected, pls uncomment code");
     });
     server.on("error", (error) => {
       console.error("Server error:", error.message || error);

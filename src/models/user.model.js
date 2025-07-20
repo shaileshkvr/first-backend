@@ -39,7 +39,6 @@ const userSchema = new mongoose.Schema(
     },
     coverImage: {
       type: String, // cloudinary URL or local path
-      required: true,
     },
     watchHistory: [
       {
@@ -49,6 +48,7 @@ const userSchema = new mongoose.Schema(
     ],
     refreshToken: {
       type: String,
+      select: false,
       select: false,
     },
   },
