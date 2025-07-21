@@ -62,10 +62,6 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.isPasswordValid = async function (password) {
-  // const isValid = await bcrypt.compare(password, this.password);
-  // if (!isValid) {
-  //   throw new ApiErrors(401, "Invalid password");
-  // }
   return await bcrypt.compare(password, this.password);
 };
 
