@@ -1,6 +1,6 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
-import { User } from "../models/user.model.js";
+import User from "../models/user.model.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
@@ -9,7 +9,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
     const user = await User.findById(userId);
 
     const accessToken = user.generateAccessToken();
-    const refreshToken = user.generateRefreshToken(); 
+    const refreshToken = user.generateRefreshToken();
 
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
@@ -78,16 +78,13 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  // data -> req.body
-  // username or email
-  // find user
-  // validate password
-  // on success -> access token and refresh token
-  // send cookies
+  // access username or email and password
   const { username, email, password } = req.body;
   if (!username && !email) {
     throw new ApiError(400, "Username or email is required");
   }
+
+  // verify if user exists
   const user = await User.findOne({
     $or: [{ email }, { username }],
   }).select("+password");
@@ -96,16 +93,19 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "User with this username or email does not exist");
   }
 
-  const isPasswordValid = await user.isPasswordCorrect(password);
+  // verify password
+  const isPasswordValid = await user.isPasswordValid(password);
 
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid password");
   }
 
+  // generate access and refresh tokens
   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
     user._id
   );
 
+  // find user again to remove sensitive data
   const loggedInUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
