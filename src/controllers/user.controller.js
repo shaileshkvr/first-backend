@@ -143,7 +143,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     expires: new Date(Date.now() - 1000),
   };
 
-  res
+  return res
     .status(200)
     .clearCookie("refreshToken", "", cookieOptions)
     .clearCookie("accessToken", "", cookieOptions)
@@ -182,7 +182,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       secure: true,
     };
 
-    res
+    return res
       .status(200)
       .cookie("refreshToken", newRefreshToken, cookiesOptions)
       .cookie("accessToken", accessToken, cookiesOptions)
@@ -201,4 +201,30 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+// under progress
+const changeUsername = asyncHandler(async (req, res) => {});
+
+const changePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const user = await User.findById(req.user?._id);
+  const isPasswordValid = await user.isPasswordValid(currentPassword);
+
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid Current Password");
+  }
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Password changed successfully"));
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  changePassword,
+};
