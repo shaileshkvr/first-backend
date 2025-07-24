@@ -201,8 +201,20 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
-// under progress
-const changeUsername = asyncHandler(async (req, res) => {});
+const changeFullName = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user?._id);
+
+  if (!newFullName || newFullName.trim() === "") {
+    throw new ApiError(400, "Full name is required");
+  }
+
+  user.fullName = newFullName;
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Full name changed successfully"));
+});
 
 const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
@@ -221,10 +233,20 @@ const changePassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, null, "Password changed successfully"));
 });
 
+// under progress
+const changeAvatar = asyncHandler(async (req, res) => {
+  console.log("API hit");
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Avatar changed successfully"));
+});
+
 export {
   registerUser,
   loginUser,
   logoutUser,
   refreshAccessToken,
   changePassword,
+  changeFullName,
+  changeAvatar,
 };

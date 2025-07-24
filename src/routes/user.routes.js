@@ -1,5 +1,8 @@
 import { Router } from "express";
 import {
+  changeAvatar,
+  changeFullName,
+  changePassword,
   loginUser,
   logoutUser,
   refreshAccessToken,
@@ -26,5 +29,12 @@ router.route("/login").post(loginUser);
 router.route("/logout").post(verifyJwt, logoutUser);
 
 router.route("/refresh-token").post(refreshAccessToken);
+
+// Under progress
+// router.route("/change-avatar").post(verifyJwt, upload.single("avatar"), changeAvatar);
+
+router.route("/change-password").post(verifyJwt, changePassword);
+
+router.route("/change-fullname").post(verifyJwt, changeFullName);
 
 export default router;
