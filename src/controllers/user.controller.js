@@ -130,13 +130,10 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-  await User.findOneAndUpdate(
-    req.user._id,
-    {
-      $set: { refreshToken: undefined },
-    },
-    { new: true }
-  );
+  await User.findByIdAndUpdate(req.user._id, {
+    $set: { refreshToken: undefined },
+  });
+
   const cookieOptions = {
     httpOnly: true,
     secure: true,
@@ -201,6 +198,12 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
+const getCurrentUser = asyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "Current user fetched successfully"));
+});
+
 const changeFullName = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user?._id);
 
@@ -233,12 +236,52 @@ const changePassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, null, "Password changed successfully"));
 });
 
-// under progress
-const changeAvatar = asyncHandler(async (req, res) => {
-  console.log("API hit");
+const updateAvatar = asyncHandler(async (req, res) => {
+  const localAvatarPath = req.file?.path;
+
+  if (!localAvatarPath) {
+    throw new ApiError(400, "Avatar file is required");
+  }
+
+  const avatar = await uploadOnCloudinary(localAvatarPath);
+
+  if (!avatar?.secure_url) {
+    throw new ApiError(400, "Failed to upload avatar on cloud");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: { avatar: avatar.secure_url } },
+    { new: true }
+  ).select("-password -refreshToken");
+
   return res
     .status(200)
-    .json(new ApiResponse(200, null, "Avatar changed successfully"));
+    .json(new ApiResponse(200, user, "Avatar updated successfully"));
+});
+
+const updateCoverImage = asyncHandler(async (req, res) => {
+  const localCoverImagePath = req.file?.path;
+
+  if (!localCoverImagePath) {
+    throw new ApiError(400, "cover file is required");
+  }
+
+  const coverImage = await uploadOnCloudinary(localCoverImagePath);
+
+  if (!coverImage?.secure_url) {
+    throw new ApiError(400, "Failed to upload cover image on cloud");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: { coverImage: coverImage.secure_url } },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Cover image updated successfully"));
 });
 
 export {
@@ -248,5 +291,7 @@ export {
   refreshAccessToken,
   changePassword,
   changeFullName,
-  changeAvatar,
+  getCurrentUser,
+  updateAvatar,
+  updateCoverImage,
 };

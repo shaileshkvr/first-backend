@@ -22,7 +22,7 @@ const uploadOnCloudinary = async (localFilePath) => {
   } catch (error) {
     // Removing locally saved file if upload fails
     fs.unlinkSync(localFilePath);
-    return new ApiError(500, "Cloudinary upload failed");
+    return new ApiError(500, "Cloud upload failed");
   }
 };
 
