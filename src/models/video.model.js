@@ -14,12 +14,26 @@ const videoSchema = new mongoose.Schema(
       trim: true,
     },
     videoFile: {
-      type: String, // cloudinary URL or local path
-      required: true,
+      url: {
+        type: String, // cloudinary URL or local path
+        required: true,
+      },
+      id: {
+        type: String, // cloudinary public ID or local path
+        required: true,
+        select: false,
+      },
     },
     thumbnail: {
-      type: String, // cloudinary URL or local path
-      required: true,
+      url: {
+        type: String, // cloudinary URL or local path
+        required: true,
+      },
+      id: {
+        type: String, // cloudinary public ID or local path
+        required: true,
+        select: false,
+      },
     },
     duration: {
       type: Number, // duration in seconds from cloudinary or local file

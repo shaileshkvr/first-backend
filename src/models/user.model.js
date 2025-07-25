@@ -33,11 +33,23 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
     avatar: {
-      type: String, // cloudinary URL or local path
-      required: true,
+      url: {
+        type: String, // cloudinary URL or local path
+        required: true,
+      },
+      id: {
+        type: String, // cloudinary public ID or local path
+        required: true,
+        select: false,
+      },
     },
     coverImage: {
-      type: String, // cloudinary URL or local path
+      url: String, // cloudinary URL or local path
+      id: {
+        type: String, // cloudinary public ID or local pat
+        select: false,
+      },
+      h,
     },
     watchHistory: [
       {
