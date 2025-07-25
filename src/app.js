@@ -25,8 +25,9 @@ app.use("/api/v1/users", userRouter);
 
 app.get("/", (req, res) =>
   res.send({
-    user: "Shailesh Verma",
-    status: "Connected to database",
+    user: "Shailesh Kr Verma",
+    status: "Server runnning, connected to db",
+    message: "Server under development",
   })
 );
 
