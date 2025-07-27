@@ -12,7 +12,10 @@ import {
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
-// import uploadOnCloudinary from "../utils/cloudinary.js";
+import {
+  uploadOnCloudinary,
+  deleteFromCloudinary,
+} from "../utils/cloudinary.js";
 
 const router = Router();
 
@@ -25,6 +28,8 @@ router.route("/register").post(
 );
 
 router.route("/login").post(loginUser);
+
+// Test Routes
 
 // Secured routes
 
