@@ -49,7 +49,6 @@ const userSchema = new mongoose.Schema(
         type: String, // cloudinary public ID or local pat
         select: false,
       },
-      h,
     },
     watchHistory: [
       {
