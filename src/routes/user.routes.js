@@ -9,13 +9,11 @@ import {
   logoutUser,
   refreshAccessToken,
   registerUser,
+  getUserChannelProfile,
+  getWatchHistory,
 } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
-import {
-  uploadOnCloudinary,
-  deleteFromCloudinary,
-} from "../utils/cloudinary.js";
 
 const router = Router();
 
@@ -41,14 +39,18 @@ router.route("/get-current-user").get(verifyJwt, getCurrentUser);
 
 router.route("/change-password").post(verifyJwt, changePassword);
 
-router.route("/change-fullname").post(verifyJwt, changeFullName);
+router.route("/change-fullname").patch(verifyJwt, changeFullName);
 
 router
   .route("/update-avatar")
-  .post(verifyJwt, upload.single("avatar"), updateAvatar);
+  .patch(verifyJwt, upload.single("avatar"), updateAvatar);
 
 router
   .route("/update-cover-image")
-  .post(verifyJwt, upload.single("coverImage"), updateCoverImage);
+  .patch(verifyJwt, upload.single("coverImage"), updateCoverImage);
+
+router.route("/channel/:username").get(verifyJwt, getUserChannelProfile);
+
+router.route("/history").get(verifyJwt, getWatchHistory);
 
 export default router;
